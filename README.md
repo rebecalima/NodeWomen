@@ -11,3 +11,7 @@ yarn add nodemon -D
  
  yarn add dotenv
  --> Criar na raiz da aplicação um arquivo .env que contém as variáveis de configuração do ambiente.
+
+Criar pasta arquivo na raiz da aplicação.
+
+yarn add form-data

@@ -11,7 +11,7 @@ routes.get('/', async (req, res) => {
     fs.writeFile('./arquivos/answer.json', JSON.stringify(response.data), {enconding:'utf-8',flag: 'w'}, function(error){
         if(error) 
             throw error;
-        console.log('Arquivo salvo!');
+        return res.json( { ok:true } );
     });
 });
 
