@@ -45,48 +45,46 @@ module.exports = {
         fs.writeFile('./arquivos/answer.json', JSON.stringify(answer),{enconding:'utf-8',flag: 'w'}, function (error) {
             if (error) 
                 throw error;
-            console.log('Arquivo salvo!');  
+            //console.log('Arquivo salvo!');  
         });
 
         async function sendResult(){
             let formData = new FormData();
-            formData.append('answer', fs.createReadStream('../../arquivos/answer.json'));  
-            const request_config = {
-                headers: {
-                  "Content-Type": "multipart/form-data"
-                },
-                data: formData
-              };
-            await axios.post(`https://api.codenation.dev/v1/chall/dev-ps/submit-solution?token=${token}`, formData, request_config)
-            .then(result => {
-                if(result.status === 200)
-                    console.log(result.data);
-                else
-                    console.log("Deu ruim");
-            })
-            .catch(ex => {
-                console.log(ex)
-            });
+            formData.append('answer', fs.createReadStream('./arquivos/answer.json'));  
+            axios({
+                method: 'post',
+                url: `api.codenation.dev/v1/challenge/dev-ps/submit-solution?token=${token}`,
+                data: formData,
+                config: { headers: {'Content-Type': 'multipart/form-data' }}
+                })
+                .then(function (response) {
+                    //handle success
+                    console.log(response);
+                })
+                .catch(function (response) {
+                    //handle error
+                    console.log(response);
+                });
         }
         sendResult();
         //console.log(response.data);
         return res.json( { ok: true } );
-    },
+    }, 
     store(req, res){
         if (req.method === 'POST') {
             let body = '';
+            let i = 0;
             req.on('data', chunk => {
                 body += chunk; // convert Buffer to string
-                console.log(body);
             });
             req.on('end', () => {
                 fs.writeFile('./arquivos/answer2.json', body,{enconding:'utf-8',flag: 'w'}, function (error) {
                     if (error) 
                         throw error;
-                    console.log('Arquivo salvo!');  
+                    //console.log('Arquivo salvo!');  
                 });
-                res.end('ok');
+                res.end(body);
             });
-        }
+        }   
     }
 }
