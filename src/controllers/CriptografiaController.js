@@ -10,7 +10,7 @@ module.exports = {
         const numeroCasas = answer.numero_casas;
         const frase = answer.cifrado;
         function containsNumber(f){
-            var code = f.charCodeAt(0)
+            let code = f.charCodeAt(0)
             if(code >= 48 && code <= 57)
                 return true;
             return false;
@@ -27,16 +27,16 @@ module.exports = {
             return code;
         }
         async function decipher(){
-            var novaFrase = [].map.call(frase.toLowerCase(), function(f){
+            let novaFrase = [].map.call(frase.toLowerCase(), function(f){
                 if(notDecipherable(f))
                     return f
-                var code = f.charCodeAt(f)-numeroCasas; 
+                let code = f.charCodeAt(f)-numeroCasas; 
                 return String.fromCharCode(validateExcess(code));
             }).join('');
             return novaFrase;
         }
 
-        async function generateSummary(){
+        function generateSummary(){
             return sha1(answer.decifrado);
         }
 
@@ -48,9 +48,8 @@ module.exports = {
             console.log('Arquivo salvo!');  
         });
 
-        function sendResult(){
-
-            var formData = new FormData();
+        async function sendResult(){
+            let formData = new FormData();
             formData.append('answer', fs.createReadStream('../../arquivos/answer.json'));  
             const request_config = {
                 headers: {
@@ -58,7 +57,7 @@ module.exports = {
                 },
                 data: formData
               };
-            axios.post(`https://api.codenation.dev/v1/challenge/dev-ps/submit-solution?token=${token}`, formData, request_config)
+            await axios.post(`https://api.codenation.dev/v1/chall/dev-ps/submit-solution?token=${token}`, formData, request_config)
             .then(result => {
                 if(result.status === 200)
                     console.log(result.data);
@@ -68,10 +67,26 @@ module.exports = {
             .catch(ex => {
                 console.log(ex)
             });
-            
         }
         sendResult();
         //console.log(response.data);
-        //eturn res.json( { ok: true } );
+        return res.json( { ok: true } );
+    },
+    store(req, res){
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => {
+                body += chunk; // convert Buffer to string
+                console.log(body);
+            });
+            req.on('end', () => {
+                fs.writeFile('./arquivos/answer2.json', body,{enconding:'utf-8',flag: 'w'}, function (error) {
+                    if (error) 
+                        throw error;
+                    console.log('Arquivo salvo!');  
+                });
+                res.end('ok');
+            });
+        }
     }
 }
